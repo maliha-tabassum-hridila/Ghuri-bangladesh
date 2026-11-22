@@ -220,7 +220,7 @@ The production-ready files will be generated in the `dist` directory.
 
 **Explore GHURI Bangladesh:**
 
-https://ghuribangladesh-chi.vercel.app/
+https://ghuri-bangladesh-henna.vercel.app/
 
 ---
 
