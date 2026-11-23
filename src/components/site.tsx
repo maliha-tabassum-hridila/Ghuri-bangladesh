@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Menu, X, Heart, User, Search, Compass } from "lucide-react";
 import { useI18n, type Key } from "@/lib/i18n";
 import { getDivision } from "@/data/divisions";
@@ -29,8 +29,22 @@ export function LangToggle() {
 export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    if (!overlay) return;
+    const updateScrolled = () => setScrolled(window.scrollY > 40);
+    updateScrolled();
+    window.addEventListener("scroll", updateScrolled, { passive: true });
+    return () => window.removeEventListener("scroll", updateScrolled);
+  }, [overlay]);
+
+  const headerClass = overlay
+    ? `fixed inset-x-0 top-0 z-50 transition-colors ${scrolled || open ? "glass border-b border-border text-foreground" : "text-forest-foreground"}`
+    : "sticky top-0 z-50 glass border-b border-border";
+
   return (
-    <header className={`${overlay ? "absolute inset-x-0 top-0 z-30 text-forest-foreground" : "sticky top-0 z-30 glass border-b border-border"}`}>
+    <header className={headerClass}>
       <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-3 sm:gap-4 sm:px-4 md:px-8">
         <Link to="/" className="flex min-w-0 items-center gap-2 font-display text-lg font-semibold sm:text-xl">
           <Compass className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" aria-hidden />
@@ -49,11 +63,11 @@ export function SiteHeader({ overlay = false }: { overlay?: boolean }) {
           <Link to="/saved" aria-label={t("saved")} className="hidden rounded-full p-2 hover:bg-muted/30 sm:block"><Heart className="h-5 w-5" /></Link>
           <Link to="/profile" aria-label={t("profile")} className="hidden rounded-full p-2 hover:bg-muted/30 sm:block"><User className="h-5 w-5" /></Link>
           <span className="hidden md:inline"><LangToggle /></span>
-          <button className="rounded-full p-2 lg:hidden" onClick={() => setOpen(!open)} aria-label={t("menu")} aria-expanded={open}>{open ? <X /> : <Menu />}</button>
+          <button className="rounded-full p-2 lg:hidden" onClick={() => setOpen(!open)} aria-label={t("menu")} aria-expanded={open} aria-controls="mobile-navigation">{open ? <X /> : <Menu />}</button>
         </div>
       </div>
       {open && (
-        <nav className="max-h-[70svh] overflow-y-auto border-t border-border bg-background px-4 py-3 text-foreground lg:hidden" aria-label={t("mobileNavigation")}>
+        <nav id="mobile-navigation" className="max-h-[70svh] overflow-y-auto border-t border-border bg-background px-4 py-3 text-foreground lg:hidden" aria-label={t("mobileNavigation")}>
           {[...NAV, { to: "/budget", k: "budget" as Key }, { to: "/seasons", k: "seasons" as Key }, { to: "/nearby", k: "nearby" as Key }, { to: "/saved", k: "saved" as Key }, { to: "/profile", k: "profile" as Key }, { to: "/contact", k: "contact" as Key }].map((n) => (
             <Link key={n.to} to={n.to} onClick={() => setOpen(false)} className="block rounded-lg px-3 py-2.5 font-medium hover:bg-muted">{t(n.k)}</Link>
           ))}

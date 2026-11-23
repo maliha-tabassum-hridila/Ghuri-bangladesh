@@ -41,7 +41,6 @@ function Welcome() {
         ))}
       </div>
       <div className="absolute inset-0 scrim" />
-      <SiteHeader overlay />
       <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-4 pb-16 sm:pb-20 md:px-8">
         <p className="animate-rise text-xs font-semibold uppercase tracking-[0.4em] opacity-80" style={{ animationDelay: ".9s" }}>GHURI Bangladesh</p>
         <h1 className="animate-rise mt-4 max-w-4xl text-[2.75rem] font-semibold leading-[1.02] sm:text-6xl md:text-8xl" style={{ animationDelay: "1.05s" }}>{t("welcome")}</h1>
@@ -119,6 +118,7 @@ function Home() {
   const ref = useRef<HTMLDivElement>(null);
   return (
     <div>
+      <SiteHeader overlay />
       <Welcome />
       <div id="home" ref={ref} className="scroll-mt-0">
         <HeroSearch />
